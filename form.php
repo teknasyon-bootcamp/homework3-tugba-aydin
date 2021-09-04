@@ -24,3 +24,74 @@
  * 
  * > **Not: İsteyenler `app2.php` ve `form2.php` isminde dosyalar oluşturup sınıfa farklı özellikler kazandırabilir.
  */
+
+/**
+ * 
+ */
+class Form 
+{
+    // fields,action ve method propertyleri tanımlandı
+    private $fields;
+    private $method;
+    private $action;
+    
+    //action ve method parametrelerini alan constructor tanımlandı
+    private function __construct($action,$method)
+    {
+        //gönderilen parametreler propertylere atandı
+        $this->action=$action;
+        $this->method=$method;
+    }
+
+    // Diziye alan eklemesi yapan fonksiyon yazıldı
+    function addField($value,$key,$default=null){ 
+        //gönderilen parametreler diziye atandı
+        $this->fields[]=["key"=>$key,"value"=>$value,"default"=>$default];
+    }
+ 
+    // methodun değerinin değiştirileceği fonksiyon yazıldı
+    function setMethod($method){
+        //gönderilen parametreyle method propertysi değiştirildi
+        $this->method=$method;
+    }
+
+    //form'un ilgili alanlarını HTML çıktı olarak veren fonksiyon yazıldı
+    function render(){
+        
+        $response='';
+
+        //dizimizdeki değerleri döngü yapısıyla HTML elemanlarına aktardık
+        foreach ($this->fields as $field) {
+            $label="<label for='".$field["key"]."'>".$field['value']."</label>";
+            $input="<input type='text' name='".$field["key"]."'";
+            if($field['default']!=null){
+                $input=$input." value='".$field["default"]."' />";
+            }
+            else{
+                $input=$input."/>";
+            }
+            $response.=$label.$input;
+        }
+        $response.="<button type='submit'>Gönder</button>";
+        $form="<form method='$this->method' action='$this->action'>".$response."</form>";
+        echo($form);
+    }
+
+    //POST metotuna göre işlem yapan fonksiyon yazıldı
+    static function createPostForm($action){
+        $form=new Form($action,"POST");
+        return $form;
+    }
+
+    //GET metotuna göre işlem yapan fonksiyon yazıldı
+    static function createGetForm($action){
+        $form=new Form($action,"GET");
+        return $form;
+    }
+
+    //Parametre olarak gönderilen metota göre işlem yapan fonksiyon yazıldı
+    static function createForm($action,$method){
+        $form=new Form($action,$method);
+        return $form;
+    }
+}
